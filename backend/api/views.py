@@ -1,11 +1,17 @@
 from rest_framework import viewsets
-from .models import Client, Quote, Invoice, LineItem
+from .models import Client, Company, Quote, Invoice, LineItem
 from .serializers import (
     ClientSerializer,
+    CompanySerializer,
     QuoteSerializer,
     InvoiceSerializer,
     LineItemSerializer,
 )
+
+
+class CompanyViewSet(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
 
 
 class ClientViewSet(viewsets.ModelViewSet):

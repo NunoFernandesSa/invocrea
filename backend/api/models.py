@@ -1,18 +1,36 @@
 from django.db import models
 
 
-# Client
+# ===================
+# ===== Company =====
+# ===================
+class Company(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField(null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    address = models.TextField(blank=True, null=True)
+    siret = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+# ==================
+# ===== Client =====
+# ==================
 class Client(models.Model):
-    company = models.CharField(max_length=255)
+    company = models.ForeignKey(
+        Company, on_delete=models.SET_NULL, null=True, blank=True
+    )
     name = models.CharField(max_length=255)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-    siret = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.name} {self.company}"
+        return f"{self.name}"
 
 
 # Quote
@@ -25,7 +43,7 @@ class Quote(models.Model):
     valid_until = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return f"Quote {self.reference} - {self.client.name}"
+        return f"Quote {self.reference} - {self.client}"
 
 
 # Invoice

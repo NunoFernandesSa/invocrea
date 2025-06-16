@@ -1,8 +1,11 @@
 from rest_framework import serializers
-from .models import Client, Quote, Invoice, LineItem
+from .models import Client, Quote, Invoice, LineItem, Company
 from datetime import datetime
 
 
+# =================================
+# ===== Line items Serializer =====
+# =================================
 class LineItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = LineItem
@@ -13,22 +16,19 @@ class LineItemSerializer(serializers.ModelSerializer):
         return obj.quantity * obj.unit_price
 
 
-class ClientSerializer(serializers.ModelSerializer):
+# ==============================
+# ===== Company Serializer =====
+# ==============================
+class CompanySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Client
-        fields = [
-            "id",
-            "company",
-            "name",
-            "email",
-            "phone",
-            "address",
-            "siret",
-            "created_at",
-        ]
+        model = Company
+        fields = ["id", "name", "email", "phone", "address", "siret", "created_at"]
         read_only_fields = ["created_at"]
 
 
+# ============================
+# ===== Quote Serializer =====
+# ============================
 class QuoteSerializer(serializers.ModelSerializer):
     line_items = LineItemSerializer(many=True, required=False)
 
@@ -77,6 +77,9 @@ class QuoteSerializer(serializers.ModelSerializer):
         return instance
 
 
+# ==============================
+# ===== Invoice Serializer =====
+# ==============================
 class InvoiceSerializer(serializers.ModelSerializer):
     line_items = LineItemSerializer(many=True, required=False)
 
@@ -127,9 +130,13 @@ class InvoiceSerializer(serializers.ModelSerializer):
         return instance
 
 
+# =============================
+# ===== Client Serializer =====
+# =============================
 class ClientSerializer(serializers.ModelSerializer):
     quotes = QuoteSerializer(many=True, read_only=True)
     invoices = InvoiceSerializer(many=True, read_only=True)
+    company = CompanySerializer(many=True, read_only=True)
 
     class Meta:
         model = Client
@@ -139,8 +146,9 @@ class ClientSerializer(serializers.ModelSerializer):
             "email",
             "phone",
             "address",
-            "siret",
             "created_at",
+            "company",
             "quotes",
             "invoices",
         ]
+        read_only_fields = ["created_at"]
