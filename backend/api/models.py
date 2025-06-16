@@ -33,7 +33,9 @@ class Client(models.Model):
         return f"{self.name}"
 
 
-# Quote
+# =================
+# ===== Quote =====
+# =================
 class Quote(models.Model):
     client = models.ForeignKey(
         Client, on_delete=models.SET_NULL, null=True, blank=True, related_name="quotes"
@@ -46,7 +48,9 @@ class Quote(models.Model):
         return f"Quote {self.reference} - {self.client}"
 
 
-# Invoice
+# ===================
+# ===== Invoice =====
+# ===================
 class Invoice(models.Model):
     client = models.ForeignKey(
         Client,
@@ -65,7 +69,10 @@ class Invoice(models.Model):
         return f"Invoice {self.reference} - {self.client.name}"
 
 
-# Line items (shared between quotes and invoices)
+#
+# ===========================================================
+# ===== Line items (shared between quotes and invoices) =====
+# ===========================================================
 class LineItem(models.Model):
     description = models.CharField(max_length=255)
     quantity = models.IntegerField()
