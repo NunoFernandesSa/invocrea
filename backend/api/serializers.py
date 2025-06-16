@@ -9,6 +9,9 @@ class LineItemSerializer(serializers.ModelSerializer):
         fields = ["id", "description", "quantity", "unit_price", "total"]
         read_only_fields = ["total"]
 
+    def total(self, obj):
+        return obj.quantity * obj.unit_price
+
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,7 +43,7 @@ class QuoteSerializer(serializers.ModelSerializer):
         # Generate reference number
         year = datetime.now().year
         last_quote = (
-            Quote.objects.filter(reference__contains=f"NF-Q-{year}")
+            Quote.objects.filter(reference__contains=f"NF-D-{year}")
             .order_by("reference")
             .last()
         )
@@ -80,10 +83,27 @@ class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = ["id", "client", "date", "reference", "linked_quote", "line_items"]
-        read_only_fields = ["date"]
+        read_only_fields = ["date", "reference"]
 
     def create(self, validated_data):
         line_items_data = validated_data.pop("line_items", [])
+
+        # Generate reference number
+        year = datetime.now().year
+        last_invoice = (
+            Invoice.objects.filter(reference__contains=f"NF-F-{year}")
+            .order_by("reference")
+            .last()
+        )
+
+        if last_invoice:
+            last_number = int(last_invoice.reference.split("-")[-1])
+            new_number = str(last_number + 1).zfill(5)
+        else:
+            new_number = "00001"
+
+        validated_data["reference"] = f"NF-F-{year}-{new_number}"
+
         invoice = Invoice.objects.create(**validated_data)
         for item_data in line_items_data:
             LineItem.objects.create(invoice=invoice, **item_data)
@@ -91,9 +111,9 @@ class InvoiceSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         line_items_data = validated_data.pop("line_items", None)
+        validated_data.pop("reference", None)  # Prevent reference from being updated
 
         instance.client = validated_data.get("client", instance.client)
-        instance.reference = validated_data.get("reference", instance.reference)
         instance.linked_quote = validated_data.get(
             "linked_quote", instance.linked_quote
         )

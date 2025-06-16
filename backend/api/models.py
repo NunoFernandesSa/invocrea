@@ -17,7 +17,9 @@ class Client(models.Model):
 
 # Quote
 class Quote(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="quotes")
+    client = models.ForeignKey(
+        Client, on_delete=models.SET_NULL, null=True, blank=True, related_name="quotes"
+    )
     date = models.DateField(auto_now_add=True)
     reference = models.CharField(max_length=100, unique=True)
     valid_until = models.DateField(null=True, blank=True)
@@ -29,7 +31,11 @@ class Quote(models.Model):
 # Invoice
 class Invoice(models.Model):
     client = models.ForeignKey(
-        Client, on_delete=models.CASCADE, related_name="invoices"
+        Client,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="invoices",
     )
     date = models.DateField(auto_now_add=True)
     reference = models.CharField(max_length=100, unique=True)
