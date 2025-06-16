@@ -3,7 +3,7 @@ from django.db import models
 
 # Client
 class Client(models.Model):
-    company = models.CharField(max_length=255, null=True, blank=True)
+    company = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True, null=True)
@@ -12,7 +12,7 @@ class Client(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {self.company}"
 
 
 # Quote
