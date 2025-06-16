@@ -7,12 +7,14 @@ from datetime import datetime
 # ===== Line items Serializer =====
 # =================================
 class LineItemSerializer(serializers.ModelSerializer):
+    total = serializers.SerializerMethodField()
+
     class Meta:
         model = LineItem
         fields = ["id", "description", "quantity", "unit_price", "total"]
         read_only_fields = ["total"]
 
-    def total(self, obj):
+    def get_total(self, obj):
         return obj.quantity * obj.unit_price
 
 
@@ -34,7 +36,14 @@ class QuoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Quote
-        fields = ["id", "client", "date", "reference", "valid_until", "line_items"]
+        fields = [
+            "id",
+            "client",
+            "date",
+            "reference",
+            "valid_until",
+            "line_items",
+        ]
         read_only_fields = ["date", "reference"]
 
     def create(self, validated_data):
@@ -65,10 +74,12 @@ class QuoteSerializer(serializers.ModelSerializer):
         line_items_data = validated_data.pop("line_items", None)
         validated_data.pop("reference", None)  # Prevent reference from being updated
 
-        instance.client = validated_data.get("client", instance.client)
-        instance.valid_until = validated_data.get("valid_until", instance.valid_until)
+        # Update quote fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         instance.save()
 
+        # Handle line items update
         if line_items_data is not None:
             instance.line_items.all().delete()  # Clear existing line items
             for item_data in line_items_data:
@@ -136,7 +147,9 @@ class InvoiceSerializer(serializers.ModelSerializer):
 class ClientSerializer(serializers.ModelSerializer):
     quotes = QuoteSerializer(many=True, read_only=True)
     invoices = InvoiceSerializer(many=True, read_only=True)
-    company = CompanySerializer(many=True, read_only=True)
+    company = serializers.PrimaryKeyRelatedField(
+        queryset=Company.objects.all(), required=False, allow_null=True
+    )
 
     class Meta:
         model = Client

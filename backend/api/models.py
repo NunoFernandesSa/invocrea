@@ -40,7 +40,7 @@ class Quote(models.Model):
     )
     date = models.DateField(auto_now_add=True)
     reference = models.CharField(max_length=100, unique=True)
-    valid_until = models.DateField(null=True, blank=True)
+    valid_until = models.DateField()
 
     def __str__(self):
         return f"Quote {self.reference} - {self.client}"
