@@ -1,6 +1,6 @@
-# 🧾 Invocrea – Billing & Quotation Management App
+# 🧾 Invocrea – Invoices & Quotates Management App
 
-A simple Nextjs & Django-based application to manage clients, create quotes and invoices, and track business transactions.
+A simple Nextjs & Django-based application to create quotes and invoices.
 
 ---
 
@@ -27,7 +27,7 @@ A simple Nextjs & Django-based application to manage clients, create quotes and 
 - Statistics: total invoiced, pending quotes, revenue tracking
 
 ### 5. ⚙️ Company Settings
-- Configure company name, address, and logo
+- Configure company name, address
 - Add legal notices or payment terms
 
 ---
@@ -36,7 +36,7 @@ A simple Nextjs & Django-based application to manage clients, create quotes and 
 
 - Python 3
 - Django 4+
-- SQLite (or PostgreSQL/MySQL for production)
+- SQLite
 - NEXTJS (with Tailwind)
 - ReportLab / WeasyPrint (for PDF export)
 
